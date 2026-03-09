@@ -1,7 +1,7 @@
 # 角色临时工作空间配置
 
 **创建时间：** 2026-03-06  
-**位置：** `/root/.openclaw/workspace-wbs/`
+**位置：** `/home/admin/.openclaw/workspace-secretary/role-workspaces/`
 
 ---
 
@@ -9,15 +9,14 @@
 
 **问题：** 角色扮演产生的 memory 会污染主工作空间
 
-**解决：** 创建独立的 workspace-wbs，每个角色一个独立的英文子目录
+**解决：** 创建独立的 `role-workspaces/`，每个角色一个独立的英文子目录
 
 ---
 
 ## 📁 目录结构
 
 ```
-/root/.openclaw/workspace-wbs/
-├── README.md                      # 使用说明
+/home/admin/.openclaw/workspace-secretary/role-workspaces/
 ├── design/                        # 设计类角色（7 个）
 ├── engineering/                   # 工程类角色（7 个）
 │   └── backend-developer/         # 示例：后端开发
@@ -35,7 +34,7 @@
 └── spatial-computing/             # 空间计算类角色（6 个）
 ```
 
-**总计：** 9 个分类，52 个角色位置
+**总计：** 9 个分类，77 个角色位置（对应 role-library）
 
 ---
 
@@ -50,12 +49,13 @@
 ### 2. 万能小秘书自动创建角色目录
 
 ```bash
-/root/bin/create-role-workspace.sh engineering backend-developer
+# 自动创建角色工作空间
+mkdir -p /home/admin/.openclaw/workspace-secretary/role-workspaces/<category>/<role-name>/{memory,tasks,outputs}
 ```
 
 **创建结果：**
 ```
-✅ /root/.openclaw/workspace-wbs/engineering/backend-developer/
+✅ /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/backend-developer/
    ├── role-config.md
    ├── memory/2026-03-06.md
    ├── tasks/
@@ -70,50 +70,50 @@
 
 ### 4. 角色扮演结束
 
-- ✅ 重要成果 → 移动到主工作空间
+- ✅ 重要成果 → 移动到主工作空间或项目目录
 - ❌ 临时数据 → 可选择删除
 - 📁 角色目录 → 保留（下次可复用）
 
 ---
 
-## 🛠️ 管理工具
+## 🛠️ 管理命令
 
 ### 创建角色工作空间
 
 ```bash
 # 用法
-/root/bin/create-role-workspace.sh <category> <role-name>
+mkdir -p /home/admin/.openclaw/workspace-secretary/role-workspaces/<category>/<role-name>/{memory,tasks,outputs}
 
 # 示例
-/root/bin/create-role-workspace.sh engineering backend-developer
-/root/bin/create-role-workspace.sh product product-manager
-/root/bin/create-role-workspace.sh design ux-designer
+mkdir -p /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/backend-developer/{memory,tasks,outputs}
+mkdir -p /home/admin/.openclaw/workspace-secretary/role-workspaces/product/product-manager/{memory,tasks,outputs}
+mkdir -p /home/admin/.openclaw/workspace-secretary/role-workspaces/design/ux-designer/{memory,tasks,outputs}
 ```
 
 ### 查看角色目录
 
 ```bash
 # 查看所有分类
-ls /root/.openclaw/workspace-wbs/
+ls /home/admin/.openclaw/workspace-secretary/role-workspaces/
 
 # 查看特定分类的角色
-ls /root/.openclaw/workspace-wbs/engineering/
+ls /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/
 
 # 查看角色详情
-ls -la /root/.openclaw/workspace-wbs/engineering/backend-developer/
+ls -la /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/backend-developer/
 ```
 
 ### 清理临时数据
 
 ```bash
 # 清理特定角色的 memory
-rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/memory/*
+rm -rf /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/backend-developer/memory/*
 
 # 清理 7 天前的所有临时文件
-find /root/.openclaw/workspace-wbs -type f -mtime +7 -delete
+find /home/admin/.openclaw/workspace-secretary/role-workspaces -type f -mtime +7 -delete
 
 # 删除整个角色目录（谨慎！）
-rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/
+rm -rf /home/admin/.openclaw/workspace-secretary/role-workspaces/engineering/backend-developer/
 ```
 
 ---
@@ -124,9 +124,10 @@ rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/
 - ✅ 万能小秘书的永久记忆
 - ✅ 重要文档和配置
 - ✅ 长期记忆（MEMORY.md）
-- ❌ **不受角色扮演影响**
+- ✅ 项目文档
+- ❌ **不受角色扮演临时数据影响**
 
-### 角色工作空间（workspace-wbs）
+### 角色工作空间（role-workspaces）
 - ✅ 角色扮演的临时记忆
 - ✅ 角色任务的工作记录
 - ✅ 可清理的临时数据
@@ -178,8 +179,8 @@ rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/
 大圣爸爸："扮演 Backend Developer，设计一个打卡 API"
 
 万能小秘书：
-1. 创建目录：workspace-wbs/engineering/backend-developer/
-2. 加载角色设定
+1. 创建目录：role-workspaces/engineering/backend-developer/
+2. 加载角色设定（从 role-library/engineering/backend-developer.md）
 3. 工作记录保存到 backend-developer/memory/
 4. API 设计保存到 backend-developer/outputs/
 5. 完成后询问是否保留成果
@@ -191,7 +192,7 @@ rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/
 大圣爸爸："用 Product Manager 的视角分析这个功能"
 
 万能小秘书：
-1. 创建目录：workspace-wbs/product/product-manager/
+1. 创建目录：role-workspaces/product/product-manager/
 2. 加载角色设定
 3. 分析记录保存到 product-manager/memory/
 4. 分析报告保存到 product-manager/outputs/
@@ -242,6 +243,16 @@ rm -rf /root/.openclaw/workspace-wbs/engineering/backend-developer/
 
 ---
 
+## 📋 当前角色工作空间状态
+
+| 分类 | 角色目录 | 状态 |
+|------|---------|------|
+| engineering | backend-developer | ✅ 已有数据 |
+| 其他分类 | - | ⏳ 按需创建 |
+
+---
+
 **维护者：** 万能小秘书  
 **创建时间：** 2026-03-06  
-**版本：** v1.0
+**版本：** v2.0（整合到 workspace-secretary）  
+**最后更新：** 2026-03-09
