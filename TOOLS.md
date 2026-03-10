@@ -89,6 +89,38 @@ Skills define _how_ tools work. This file is for _your_ specifics — the stuff 
 
 ---
 
+## 🍽️ 卡路里查询工具
+
+**脚本位置：** `/root/bin/calorie-check.sh`  
+**分析模型：** 通义千问视觉模型 `qwen-vl-max-latest`  
+**图片来源：** weightloss-backend 项目
+
+**使用方法：**
+```bash
+# 分析食物图片（文本输出）
+/root/bin/calorie-check.sh /path/to/food.jpg
+
+# JSON 格式输出
+/root/bin/calorie-check.sh /path/to/food.jpg json
+```
+
+**环境变量：**
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DASHSCOPE_API_KEY` | 通义千问 API Key（必需） | - |
+| `GALLERY_BASE_URL` | 图片服务器地址 | `https://gallery.lanxiongxiong.com` |
+| `UPLOAD_FOLDER` | 上传目录 | `/home/admin/prod/weightloss-backend/uploads` |
+
+**功能：**
+- 识别图片中的食物种类
+- 估算每种食物的份量（克）
+- 计算每种食物的卡路里（大卡）
+- 给出总卡路里估算
+
+**详细文档：** `/home/admin/repo/weightloss-backend/CALORIE_CHECK_TOOL.md`
+
+---
+
 ## 📱 微信公众号
 
 **MCP 服务：** `wenyan-mcp`  
