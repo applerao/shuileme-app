@@ -99,6 +99,13 @@ npm run dev
 - [认证 API](api/docs/AUTH-API.md)
 - [监督功能 API](api/docs/SUPERVISION_API.md)
 
+### 技术文档
+- [微信登录配置](docs/微信登录配置.md)
+- [微信登录集成指南](docs/微信登录集成指南.md)
+- [推送权限申请流程](docs/推送权限申请流程.md)
+- [极光推送配置文档](docs/极光推送配置文档.md)
+- [推送权限申请流程](docs/推送权限申请流程.md)
+
 ## 🔗 相关仓库
 
 - **GitHub:** https://github.com/applerao/shuileme-app（待创建）
