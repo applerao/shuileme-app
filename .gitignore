@@ -36,3 +36,12 @@ __pycache__/
 tmp/
 temp/
 *.tmp
+
+# Python
+*.py[cod]
+*$py.class
+.venv
+venv/
+
+# Project specific
+projects/shuileme/legacy/
