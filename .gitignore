@@ -45,3 +45,5 @@ venv/
 
 # Project specific
 projects/shuileme/legacy/
+projects/shuileme/*/node_modules/
+projects/shuileme/*/dist/
