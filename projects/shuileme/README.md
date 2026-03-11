@@ -78,10 +78,15 @@ npm run dev
 
 ## 📝 文档
 
-- [项目计划](docs/project-plan.md)
-- [营销计划](docs/marketing-plan.md)
-- [技术规格](docs/tech-spec.md)
-- [API 文档](api/docs/)
+### 产品文档
+- [项目计划](docs/project-plan.md) - 完整项目规划
+- [PRD](docs/PRD-睡了么.md) - 产品需求文档
+- [营销计划](docs/marketing-plan.md) - 市场推广方案
+- [技术规格](docs/tech-spec.md) - 技术架构说明
+
+### API 文档
+- [认证 API](api/docs/AUTH-API.md)
+- [监督功能 API](api/docs/SUPERVISION_API.md)
 
 ## 🔗 相关仓库
 
