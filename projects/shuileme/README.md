@@ -84,6 +84,17 @@ npm run dev
 - [营销计划](docs/marketing-plan.md) - 市场推广方案
 - [技术规格](docs/tech-spec.md) - 技术架构说明
 
+### 用户文档
+- [用户手册大纲](docs/user-guides/01-用户手册大纲.md)
+- [帮助文档 FAQ](docs/user-guides/02-帮助文档 FAQ.md)
+- [隐私政策](docs/user-guides/03-隐私政策要点.md)
+- [服务条款](docs/user-guides/04-服务条款要点.md)
+
+### 商务文档
+- [开发成本估算](docs/business/05-开发成本估算.md)
+- [运营成本估算](docs/business/06-运营成本估算.md)
+- [收入预测](docs/business/07-收入预测.md)
+
 ### API 文档
 - [认证 API](api/docs/AUTH-API.md)
 - [监督功能 API](api/docs/SUPERVISION_API.md)
