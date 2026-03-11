@@ -1,9 +1,6 @@
-// 公共组件将放在这里
-// Common components will be placed here
+// 社交监督功能组件导出
+// Social Supervision Feature Components Export
 
-// 示例组件结构:
-// - Button.tsx
-// - Card.tsx
-// - Input.tsx
-// - Loading.tsx
-// - Modal.tsx
+export { default as SocialScreen } from './SocialScreen';
+export { default as AddSupervisorScreen } from './AddSupervisorScreen';
+export { default as SupervisorList } from './SupervisorList';
