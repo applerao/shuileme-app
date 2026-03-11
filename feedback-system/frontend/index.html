@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>睡了么 - 用户反馈</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group label .required {
+      color: #e74c3c;
+      margin-left: 4px;
+    }
+
+    .type-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .type-option {
+      flex: 1;
+      min-width: 80px;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .type-option:hover {
+      border-color: #667eea;
+    }
+
+    .type-option.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .type-option .icon {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 150px;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .upload-area {
+      border: 2px dashed #e0e0e0;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .upload-area.dragover {
+      border-color: #667eea;
+      background: #f0f2ff;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .upload-hint {
+      color: #999;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .preview-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .preview-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #e0e0e0;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-item .remove-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(231, 76, 60, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .success-message h2 {
+      color: #27ae60;
+      margin-bottom: 10px;
+    }
+
+    .success-message p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      padding: 12px 30px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .error-message {
+      background: #fee;
+      color: #e74c3c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .type-option {
+        min-width: 70px;
+        padding: 10px 12px;
+      }
+
+      .type-option .icon {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 反馈表单 -->
+    <div id="feedbackForm">
+      <div class="header">
+        <h1>💬 用户反馈</h1>
+        <p>您的意见对我们很重要，帮助我们做得更好</p>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <form id="form">
+        <!-- 反馈类型 -->
+        <div class="form-group">
+          <label>反馈类型 <span class="required">*</span></label>
+          <div class="type-selector">
+            <div class="type-option" data-type="bug">
+              <span class="icon">🐛</span>
+              <span>Bug</span>
+            </div>
+            <div class="type-option" data-type="suggestion">
+              <span class="icon">💡</span>
+              <span>建议</span>
+            </div>
+            <div class="type-option" data-type="other">
+              <span class="icon">📝</span>
+              <span>其他</span>
+            </div>
+          </div>
+          <input type="hidden" id="type" name="type" required>
+        </div>
+
+        <!-- 反馈内容 -->
+        <div class="form-group">
+          <label>反馈内容 <span class="required">*</span></label>
+          <textarea 
+            id="content" 
+            name="content" 
+            placeholder="请详细描述您遇到的问题或建议..."
+            maxlength="2000"
+            required
+          ></textarea>
+          <div class="char-count"><span id="charCount">0</span>/2000</div>
+        </div>
+
+        <!-- 截图上传 -->
+        <div class="form-group">
+          <label>截图上传（可选）</label>
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">点击或拖拽上传图片</div>
+            <div class="upload-hint">支持 jpg/png/gif/webp，最多 5 张，每张不超过 5MB</div>
+            <input type="file" class="file-input" id="screenshots" name="screenshots" accept="image/*" multiple>
+          </div>
+          <div class="preview-container" id="previewContainer"></div>
+        </div>
+
+        <!-- 联系方式 -->
+        <div class="form-group">
+          <label>联系方式（可选）</label>
+          <input 
+            type="text" 
+            id="contact" 
+            name="contact" 
+            placeholder="微信/QQ/邮箱，方便我们与您联系"
+          >
+        </div>
+
+        <!-- 提交按钮 -->
+        <button type="submit" class="submit-btn" id="submitBtn">
+          提交反馈
+        </button>
+      </form>
+    </div>
+
+    <!-- 成功提示 -->
+    <div class="success-message" id="successMessage">
+      <div class="success-icon">✅</div>
+      <h2>反馈提交成功！</h2>
+      <p>感谢您的反馈，我们会尽快处理</p>
+      <button class="back-btn" onclick="location.reload()">再提一个</button>
+    </div>
+  </div>
+
+  <script>
+    // API 配置
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // 获取设备信息
+    function getDeviceInfo() {
+      return {
+        deviceId: localStorage.getItem('deviceId') || generateDeviceId(),
+        appVersion: '1.0.0',
+        os: navigator.platform,
+        osVersion: navigator.userAgent
+      };
+    }
+
+    function generateDeviceId() {
+      const id = 'device_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('deviceId', id);
+      return id;
+    }
+
+    // DOM 元素
+    const form = document.getElementById('form');
+    const typeOptions = document.querySelectorAll('.type-option');
+    const typeInput = document.getElementById('type');
+    const contentInput = document.getElementById('content');
+    const charCount = document.getElementById('charCount');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('screenshots');
+    const previewContainer = document.getElementById('previewContainer');
+    const contactInput = document.getElementById('contact');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const successMessage = document.getElementById('successMessage');
+
+    // 存储上传的文件
+    let uploadedFiles = [];
+
+    // 类型选择
+    typeOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        typeOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        typeInput.value = option.dataset.type;
+      });
+    });
+
+    // 字符计数
+    contentInput.addEventListener('input', () => {
+      charCount.textContent = contentInput.value.length;
+    });
+
+    // 拖拽上传
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => {
+        uploadArea.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => {
+        uploadArea.classList.remove('dragover');
+      });
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      Array.from(files).forEach(file => {
+        if (uploadedFiles.length >= 5) {
+          showError('最多只能上传 5 张图片');
+          return;
+        }
+
+        if (!validTypes.includes(file.type)) {
+          showError('只支持图片文件 (jpg/png/gif/webp)');
+          return;
+        }
+
+        if (file.size > maxSize) {
+          showError('单张图片不能超过 5MB');
+          return;
+        }
+
+        uploadedFiles.push(file);
+        addPreview(file);
+      });
+
+      fileInput.value = ''; // 重置 input
+    }
+
+    function addPreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        previewItem.innerHTML = `
+          <img src="${e.target.result}" alt="preview">
+          <button type="button" class="remove-btn" onclick="removePreview(${uploadedFiles.length - 1})">×</button>
+        `;
+        previewContainer.appendChild(previewItem);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removePreview(index) {
+      uploadedFiles.splice(index, 1);
+      previewContainer.innerHTML = '';
+      uploadedFiles.forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const previewItem = document.createElement('div');
+          previewItem.className = 'preview-item';
+          previewItem.innerHTML = `
+            <img src="${e.target.result}" alt="preview">
+            <button type="button" class="remove-btn" onclick="removePreview(${i})">×</button>
+          `;
+          previewContainer.appendChild(previewItem);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.add('show');
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 3000);
+    }
+
+    // 表单提交
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // 验证
+      if (!typeInput.value) {
+        showError('请选择反馈类型');
+        return;
+      }
+
+      if (!contentInput.value.trim()) {
+        showError('请填写反馈内容');
+        return;
+      }
+
+      // 准备数据
+      const formData = new FormData();
+      formData.append('type', typeInput.value);
+      formData.append('content', contentInput.value.trim());
+      formData.append('contact', contactInput.value.trim());
+
+      const deviceInfo = getDeviceInfo();
+      formData.append('deviceId', deviceInfo.deviceId);
+      formData.append('appVersion', deviceInfo.appVersion);
+      formData.append('os', deviceInfo.os);
+      formData.append('osVersion', deviceInfo.osVersion);
+
+      uploadedFiles.forEach(file => {
+        formData.append('screenshots', file);
+      });
+
+      // 提交
+      submitBtn.disabled = true;
+      submitBtn.textContent = '提交中...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/feedback/submit`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          feedbackForm.style.display = 'none';
+          successMessage.classList.add('show');
+        } else {
+          showError(result.message || '提交失败，请重试');
+          submitBtn.disabled = false;
+          submitBtn.textContent = '提交反馈';
+        }
+      } catch (error) {
+        console.error('提交失败:', error);
+        showError('网络错误，请检查网络连接');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '提交反馈';
+      }
+    });
+  </script>
+</body>
+</html>

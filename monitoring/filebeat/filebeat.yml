@@ -1,0 +1,118 @@
+# Filebeat 配置
+# 睡了么 App 日志采集
+
+filebeat.inputs:
+  # ==================== 应用日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/slept-app/*.log
+      - /var/log/slept-app/**/*.log
+    tags: ["slept-app", "application"]
+    fields:
+      service: slept-app-backend
+      environment: production
+    multiline.pattern: '^\d{4}-\d{2}-\d{2}'
+    multiline.negate: true
+    multiline.match: after
+    json.keys_under_root: true
+    json.add_error_key: true
+    json.message_key: message
+
+  # ==================== Nginx 访问日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/nginx/access.log
+    tags: ["nginx", "access"]
+    fields:
+      service: nginx
+      log_type: access
+    parsers:
+      - ndjson:
+          message_key: message
+          add_error_key: true
+          target: ""
+
+  # ==================== Nginx 错误日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/nginx/error.log
+    tags: ["nginx", "error"]
+    fields:
+      service: nginx
+      log_type: error
+
+  # ==================== MySQL 慢查询日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/mysql/mysql-slow.log
+    tags: ["mysql", "slow-query"]
+    fields:
+      service: mysql
+      log_type: slow_query
+
+  # ==================== MySQL 错误日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/mysql/error.log
+    tags: ["mysql", "error"]
+    fields:
+      service: mysql
+      log_type: error
+
+  # ==================== 系统日志 ====================
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/syslog
+      - /var/log/messages
+    tags: ["system"]
+    fields:
+      service: system
+
+  # ==================== Docker 容器日志 ====================
+  - type: container
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    stream: all
+    tags: ["docker"]
+    fields:
+      service: docker
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+
+# ==================== 输出配置 ====================
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl.enabled: false
+  loadbalance: true
+  bulk_max_size: 2048
+
+# ==================== 日志记录 ====================
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat.log
+  keepfiles: 7
+  permissions: 0644
+
+# ==================== 监控配置 ====================
+http.enabled: true
+http.host: 0.0.0.0
+http.port: 5066
+
+# ==================== 队列配置 ====================
+queue.mem:
+  events: 4096
+  flush.min_events: 512
+  flush.timeout: 5s
+
+# ==================== 注册表配置 ====================
+path.data: /var/lib/filebeat

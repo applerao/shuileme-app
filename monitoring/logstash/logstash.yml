@@ -1,0 +1,23 @@
+# Logstash 配置
+# 睡了么 App 日志处理
+
+# 管道配置
+path.data: /usr/share/logstash/data
+path.logs: /usr/share/logstash/logs
+
+# 管道设置
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# HTTP API (用于监控)
+http.host: "0.0.0.0"
+http.port: 9600
+
+# 日志级别
+log.level: info
+log.format: json
+
+# X-Pack 监控 (可选)
+# xpack.monitoring.enabled: true
+# xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]

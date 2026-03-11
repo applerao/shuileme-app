@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: shuileme-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: shuileme123
+      MONGO_INITDB_DATABASE: shuileme-feedback
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - feedback-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: shuileme-backend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:shuileme123@mongodb:27017/shuileme-feedback?authSource=admin
+      - JWT_SECRET=change-this-to-a-random-string-in-production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - feedback-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: shuileme-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html/frontend:ro
+      - ./admin:/usr/share/nginx/html/admin:ro
+      - ./backend/uploads:/usr/share/nginx/html/uploads:ro
+    depends_on:
+      - backend
+    networks:
+      - feedback-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  feedback-network:
+    driver: bridge

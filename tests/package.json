@@ -1,0 +1,50 @@
+{
+  "name": "shuileme-app-tests",
+  "version": "1.0.0",
+  "description": "睡了么 App 测试套件",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit",
+    "perf:api": "node tests/performance/api-benchmark.js",
+    "lint": "eslint tests/**/*.js",
+    "lint:fix": "eslint tests/**/*.js --fix"
+  },
+  "keywords": [
+    "sleep",
+    "app",
+    "test",
+    "qa"
+  ],
+  "author": "QA Team",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "eslint": "^8.57.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/unit-tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.mock.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "reporters": [
+      "default",
+      ["jest-junit", {
+        "outputDirectory": "tests/reports/junit",
+        "outputName": "test-results.xml"
+      }]
+    ]
+  }
+}

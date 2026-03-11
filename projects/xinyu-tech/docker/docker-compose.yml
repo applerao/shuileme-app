@@ -1,0 +1,91 @@
+# Docker Compose 配置
+
+version: '3.8'
+
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: xinyu-postgres
+    environment:
+      POSTGRES_DB: xinyu
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: xinyu_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - xinyu-network
+    restart: unless-stopped
+
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: xinyu-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: xinyu_password_2026
+      MONGO_INITDB_DATABASE: xinyu
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - xinyu-network
+    restart: unless-stopped
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: xinyu-redis
+    command: redis-server --requirepass xinyu_password_2026
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - xinyu-network
+    restart: unless-stopped
+
+  # Backend
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: ../../docker/Dockerfile.backend
+    container_name: xinyu-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: xinyu
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: xinyu_password_2026
+      MONGODB_URI: mongodb://admin:xinyu_password_2026@mongodb:27017/xinyu
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: xinyu_password_2026
+      JWT_SECRET: your_super_secret_jwt_key_change_this_in_production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+    networks:
+      - xinyu-network
+    restart: unless-stopped
+    command: npm run dev
+
+networks:
+  xinyu-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data:

@@ -1,0 +1,35 @@
+# 睡了么数据分析系统 - Python 依赖
+
+# 核心分析
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# 数据库
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+alembic>=1.11.0
+
+# 可视化
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# API
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+
+# 数据导出
+openpyxl>=3.1.0
+reportlab>=4.0.0
+
+# 测试
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# 工具
+python-dotenv>=1.0.0
+loguru>=0.7.0
+click>=8.1.0

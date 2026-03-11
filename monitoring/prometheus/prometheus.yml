@@ -1,0 +1,108 @@
+# Prometheus 主配置文件
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'slept-app-monitor'
+    environment: 'production'
+
+# 告警管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# 规则文件
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+# 抓取配置
+scrape_configs:
+  # Prometheus 自监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scheme: http
+
+  # Node Exporter - 服务器资源监控
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: 'app-server-01'
+          region: 'cn-shanghai'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'node_.*'
+        action: keep
+
+  # MySQL Exporter - 数据库监控
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+        labels:
+          instance: 'mysql-primary'
+          db_type: 'mysql'
+
+  # Blackbox Exporter - API 探测
+  - job_name: 'blackbox-api'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://api.sleptapp.com/health
+          - https://api.sleptapp.com/api/v1/login
+          - https://api.sleptapp.com/api/v1/user/profile
+          - https://api.sleptapp.com/api/v1/sleep/record
+        labels:
+          probe_type: 'api_health'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # 应用指标 - 从应用服务抓取
+  - job_name: 'app-metrics'
+    static_configs:
+      - targets: 
+          - 'app-server-01:8080'
+          - 'app-server-02:8080'
+        labels:
+          service: 'slept-app-backend'
+          environment: 'production'
+    metrics_path: /actuator/prometheus
+    scrape_interval: 10s
+
+  # 应用指标 - 从移动端 SDK 推送
+  - job_name: 'app-client-metrics'
+    static_configs:
+      - targets: ['push-gateway:9091']
+        labels:
+          service: 'slept-app-client'
+          platform: 'mobile'
+
+  # Blackbox - 页面加载时间监控
+  - job_name: 'blackbox-frontend'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://www.sleptapp.com
+          - https://www.sleptapp.com/sleep-tracker
+          - https://www.sleptapp.com/profile
+        labels:
+          probe_type: 'frontend_health'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

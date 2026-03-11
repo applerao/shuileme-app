@@ -1,0 +1,234 @@
+{
+  "dashboard": {
+    "title": "睡了么 App - 灰度发布监控",
+    "description": "监控灰度发布期间的关键指标",
+    "tags": ["sleepwell", "gray-release", "mobile"],
+    "timezone": "Asia/Shanghai",
+    "refresh": "1m",
+    "panels": [
+      {
+        "id": 1,
+        "title": "崩溃率趋势 (Crash Rate)",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "app_crash_rate{app=\"sleepwell\"}",
+            "legendFormat": "{{version}} - {{phase}}",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {"value": 0.005, "color": "yellow", "op": "gt"},
+          {"value": 0.010, "color": "red", "op": "gt"}
+        ],
+        "yAxis": {"format": "percentunit", "min": 0}
+      },
+      {
+        "id": 2,
+        "title": "ANR 率 (Application Not Responding)",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "app_anr_rate{app=\"sleepwell\"}",
+            "legendFormat": "{{version}} - {{phase}}",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {"value": 0.003, "color": "yellow", "op": "gt"},
+          {"value": 0.008, "color": "red", "op": "gt"}
+        ],
+        "yAxis": {"format": "percentunit", "min": 0}
+      },
+      {
+        "id": 3,
+        "title": "启动失败率 (Launch Failure Rate)",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "app_launch_failure_rate{app=\"sleepwell\"}",
+            "legendFormat": "{{version}} - {{phase}}",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {"value": 0.005, "color": "yellow", "op": "gt"},
+          {"value": 0.010, "color": "red", "op": "gt"}
+        ],
+        "yAxis": {"format": "percentunit", "min": 0}
+      },
+      {
+        "id": 4,
+        "title": "API 错误率 (API Error Rate)",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "app_api_error_rate{app=\"sleepwell\"}",
+            "legendFormat": "{{version}} - {{phase}}",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {"value": 0.01, "color": "yellow", "op": "gt"},
+          {"value": 0.03, "color": "red", "op": "gt"}
+        ],
+        "yAxis": {"format": "percentunit", "min": 0}
+      },
+      {
+        "id": 5,
+        "title": "版本流量分布",
+        "type": "piechart",
+        "gridPos": {"x": 0, "y": 16, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by (version) (app_active_users{app=\"sleepwell\"})",
+            "legendFormat": "{{version}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "活跃用户数",
+        "type": "stat",
+        "gridPos": {"x": 8, "y": 16, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(app_active_users{app=\"sleepwell\"})",
+            "legendFormat": "活跃用户",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "当前发布阶段",
+        "type": "stat",
+        "gridPos": {"x": 16, "y": 16, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "gray_release_phase{app=\"sleepwell\"}",
+            "legendFormat": "Phase {{phase}} ({{percentage}}%)",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "关键错误 Top 10",
+        "type": "table",
+        "gridPos": {"x": 0, "y": 24, "w": 24, "h": 8},
+        "targets": [
+          {
+            "expr": "topk(10, sum by (error_type, version) (app_errors{app=\"sleepwell\"}))",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {"id": "organize", "options": {"renameByName": {"error_type": "错误类型", "version": "版本", "Value": "次数"}}}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "性能指标 - 启动时间 P95",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 32, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(app_launch_time_bucket{app=\"sleepwell\"}[5m]))",
+            "legendFormat": "{{version}}",
+            "refId": "A"
+          }
+        ],
+        "yAxis": {"format": "ms"}
+      },
+      {
+        "id": 10,
+        "title": "性能指标 - API 延迟 P95",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 32, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(app_api_latency_bucket{app=\"sleepwell\"}[5m]))",
+            "legendFormat": "{{version}}",
+            "refId": "A"
+          }
+        ],
+        "yAxis": {"format": "ms"}
+      },
+      {
+        "id": 11,
+        "title": "用户投诉率",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 40, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "user_complaint_rate{app=\"sleepwell\"}",
+            "legendFormat": "{{version}}",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [
+          {"value": 0.001, "color": "yellow", "op": "gt"},
+          {"value": 0.005, "color": "red", "op": "gt"}
+        ],
+        "yAxis": {"format": "percentunit", "min": 0}
+      },
+      {
+        "id": 12,
+        "title": "发布事件时间线",
+        "type": "timeline",
+        "gridPos": {"x": 12, "y": 40, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "gray_release_events{app=\"sleepwell\"}",
+            "refId": "A"
+          }
+        ]
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "发布事件",
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "type": "annotations"
+        }
+      ]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "version",
+          "type": "query",
+          "query": "label_values(app_active_users{app=\"sleepwell\"}, version)",
+          "refresh": 2,
+          "multi": true,
+          "includeAll": true
+        },
+        {
+          "name": "phase",
+          "type": "custom",
+          "options": [
+            {"text": "phase1 (5%)", "value": "phase1"},
+            {"text": "phase2 (20%)", "value": "phase2"},
+            {"text": "phase3 (50%)", "value": "phase3"},
+            {"text": "phase4 (100%)", "value": "phase4"}
+          ]
+        }
+      ]
+    }
+  }
+}

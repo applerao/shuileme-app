@@ -1,0 +1,171 @@
+# Alertmanager 配置
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@sleptapp.com'
+  smtp_auth_username: 'alertmanager@sleptapp.com'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+  # 钉钉 Webhook 配置
+  dingtalk_api_url: 'https://oapi.dingtalk.com/robot/send'
+  dingtalk_access_token: '${DINGTALK_ACCESS_TOKEN}'
+
+# 模板文件
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# 告警路由
+route:
+  receiver: 'default-receiver'
+  group_by: ['alertname', 'severity', 'category']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  
+  # 子路由 - 按告警级别分发
+  routes:
+    # P0 级别 - 电话 + 短信 + 钉钉 (立即通知)
+    - match:
+        severity: P0
+      receiver: 'p0-critical'
+      group_wait: 10s
+      repeat_interval: 1h
+      continue: true
+
+    # P1 级别 - 短信 + 钉钉
+    - match:
+        severity: P1
+      receiver: 'p1-high'
+      group_wait: 30s
+      repeat_interval: 2h
+      continue: true
+
+    # P2 级别 - 仅钉钉
+    - match:
+        severity: P2
+      receiver: 'p2-medium'
+      group_wait: 1m
+      repeat_interval: 4h
+      continue: true
+
+    # 按类别路由
+    - match:
+        category: api_availability
+      receiver: 'api-team'
+      continue: true
+
+    - match:
+        category: database
+      receiver: 'dba-team'
+      continue: true
+
+    - match:
+        category: app_experience
+      receiver: 'mobile-team'
+      continue: true
+
+# 接收器配置
+receivers:
+  # 默认接收器
+  - name: 'default-receiver'
+    email_configs:
+      - to: 'ops-team@sleptapp.com'
+        send_resolved: true
+
+  # P0 紧急告警 - 电话 + 短信 + 钉钉
+  - name: 'p0-critical'
+    # 电话告警 (需要集成 Twilio 或其他语音服务)
+    # opsgenie_configs:
+    #   - api_key: '${OPSGENIE_API_KEY}'
+    #     priority: P1
+    #     responders:
+    #       - type: oncall
+    #         name: 'slept-oncall'
+    
+    # 短信告警
+    email_configs:
+      - to: 'oncall-phone@sleptapp.com'
+        send_resolved: true
+        headers:
+          Subject: '[P0 紧急] {{ .GroupLabels.alertname }}'
+    
+    # 钉钉群机器人
+    dingtalk_configs:
+      - access_token: '${DINGTALK_ACCESS_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+  # P1 高级别告警 - 短信 + 钉钉
+  - name: 'p1-high'
+    email_configs:
+      - to: 'oncall-sms@sleptapp.com'
+        send_resolved: true
+        headers:
+          Subject: '[P1 重要] {{ .GroupLabels.alertname }}'
+    
+    dingtalk_configs:
+      - access_token: '${DINGTALK_ACCESS_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+  # P2 中级别告警 - 仅钉钉
+  - name: 'p2-medium'
+    dingtalk_configs:
+      - access_token: '${DINGTALK_ACCESS_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+  # API 团队专用
+  - name: 'api-team'
+    email_configs:
+      - to: 'api-team@sleptapp.com'
+        send_resolved: true
+    dingtalk_configs:
+      - access_token: '${DINGTALK_API_ACCESS_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+  # DBA 团队专用
+  - name: 'dba-team'
+    email_configs:
+      - to: 'dba-team@sleptapp.com'
+        send_resolved: true
+    dingtalk_configs:
+      - access_token: '${DINGTALK_DBA_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+  # 移动端团队专用
+  - name: 'mobile-team'
+    email_configs:
+      - to: 'mobile-team@sleptapp.com'
+        send_resolved: true
+    dingtalk_configs:
+      - access_token: '${DINGTALK_MOBILE_TOKEN}'
+        message_type: 'markdown'
+        send_resolved: true
+
+# 告警抑制规则
+inhibit_rules:
+  # 如果存在 P0 告警，抑制同名的 P1/P2 告警
+  - source_match:
+      severity: 'P0'
+    target_match_re:
+      severity: 'P[12]'
+    equal: ['alertname', 'instance']
+
+  # 如果实例宕机，抑制该实例的其他告警
+  - source_match:
+      alertname: 'APIEndpointDown'
+    target_match_re:
+      alertname: 'API.*'
+    equal: ['instance']
+
+# 告警静音规则 (可选)
+# mute_time_intervals:
+#   - name: 'maintenance-window'
+#     time_intervals:
+#       - weekdays: ['sunday']
+#         start_time: '02:00'
+#         end_time: '06:00'

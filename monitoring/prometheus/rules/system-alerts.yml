@@ -1,0 +1,142 @@
+# 系统资源告警规则
+groups:
+  - name: system_resource_alerts
+    interval: 30s
+    rules:
+      # ==================== CPU 使用率告警 ====================
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器 CPU 使用率过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的 CPU 使用率为 {{ $value | humanize }}%，超过 80% 阈值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-cpu"
+
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: P1
+          category: system_resource
+        annotations:
+          summary: "服务器 CPU 使用率严重过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的 CPU 使用率为 {{ $value | humanize }}%，超过 95% 临界值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/critical-cpu"
+
+      # ==================== 内存使用率告警 ====================
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器内存使用率过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的内存使用率为 {{ $value | humanize }}%，超过 85% 阈值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-memory"
+
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: P1
+          category: system_resource
+        annotations:
+          summary: "服务器内存使用率严重过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的内存使用率为 {{ $value | humanize }}%，超过 95% 临界值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/critical-memory"
+
+      - alert: OOMKillingRisk
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 5
+        for: 1m
+        labels:
+          severity: P0
+          category: system_resource
+        annotations:
+          summary: "服务器内存即将耗尽 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 可用内存仅剩 {{ $value | humanize }}%，存在 OOM 风险"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/oom-risk"
+
+      # ==================== 磁盘使用率告警 ====================
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) * 100 > 80
+        for: 10m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器磁盘使用率过高 - {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "服务器 {{ $labels.instance }} 的 {{ $labels.mountpoint }} 磁盘使用率为 {{ $value | humanize }}%，超过 80% 阈值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-disk"
+
+      - alert: CriticalDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: P1
+          category: system_resource
+        annotations:
+          summary: "服务器磁盘使用率严重过高 - {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "服务器 {{ $labels.instance }} 的 {{ $labels.mountpoint }} 磁盘使用率为 {{ $value | humanize }}%，超过 90% 临界值"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/critical-disk"
+
+      - alert: DiskWillFillIn24h
+        expr: predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}[6h], 24 * 3600) < 0
+        for: 30m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器磁盘预计 24 小时内将满 - {{ $labels.instance }}"
+          description: "根据趋势预测，服务器 {{ $labels.instance }} 的 {{ $labels.mountpoint }} 将在 24 小时内被写满"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/disk-fill-prediction"
+
+      # ==================== 磁盘 IO 告警 ====================
+      - alert: HighDiskIOLatency
+        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器磁盘 IO 延迟过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的磁盘 IO 等待时间为 {{ $value | humanize }}秒"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-disk-io"
+
+      # ==================== 网络告警 ====================
+      - alert: HighNetworkTraffic
+        expr: sum(rate(node_network_receive_bytes_total{device!~"lo|docker.*"}[5m])) by (instance) > 100 * 1024 * 1024
+        for: 5m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器网络流入流量过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的网络流入流量超过 100MB/s"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-network"
+
+      - alert: NetworkInterfaceDown
+        expr: node_network_up{device!~"lo"} == 0
+        for: 1m
+        labels:
+          severity: P0
+          category: system_resource
+        annotations:
+          summary: "服务器网络接口宕机 - {{ $labels.instance }} ({{ $labels.device }})"
+          description: "服务器 {{ $labels.instance }} 的网络接口 {{ $labels.device }} 已宕机"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/network-down"
+
+      # ==================== 系统负载告警 ====================
+      - alert: HighLoadAverage
+        expr: node_load1 > count(count(node_cpu_seconds_total) by (cpu, instance)) * 2
+        for: 5m
+        labels:
+          severity: P2
+          category: system_resource
+        annotations:
+          summary: "服务器负载过高 - {{ $labels.instance }}"
+          description: "服务器 {{ $labels.instance }} 的 1 分钟负载为 {{ $value }}，超过 CPU 核心数的 2 倍"
+          runbook_url: "https://wiki.sleptapp.com/runbooks/high-load"

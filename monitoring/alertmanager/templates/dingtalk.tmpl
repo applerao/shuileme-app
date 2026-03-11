@@ -1,0 +1,63 @@
+{{ define "dingtalk.title" }}
+{{- if eq .Status "firing" -}}
+🚨 [{{ .GroupLabels.severity }}] {{ .GroupLabels.alertname }}
+{{- else -}}
+✅ [已恢复] {{ .GroupLabels.alertname }}
+{{- end }}
+{{ end }}
+
+{{ define "dingtalk.content" }}
+{{- if eq .Status "firing" -}}
+## 🚨 告警通知
+
+**告警级别:** {{ .GroupLabels.severity }}
+**告警类型:** {{ .GroupLabels.category }}
+**触发时间:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+**持续时间:** {{ .StartsAt | since }}
+
+---
+
+### 📋 告警详情
+
+{{ range .Alerts }}
+**告警名称:** {{ .Labels.alertname }}
+**实例:** {{ .Labels.instance | default "N/A" }}
+**服务:** {{ .Labels.service | default "N/A" }}
+**描述:** {{ .Annotations.description }}
+
+{{ if .Annotations.runbook_url }}
+**处理手册:** [点击查看]({{ .Annotations.runbook_url }})
+{{ end }}
+---
+{{ end }}
+
+### 🔧 快速操作
+
+- [查看 Prometheus](http://prometheus:9090/alerts)
+- [查看 Grafana](http://grafana:3000)
+- [查看 Alertmanager](http://alertmanager:9093)
+
+---
+⚠️ 请值班人员及时处理！
+{{- else -}}
+## ✅ 告警恢复
+
+**告警名称:** {{ .GroupLabels.alertname }}
+**恢复时间:** {{ .EndsAt.Format "2006-01-02 15:04:05" }}
+**持续时间:** {{ .StartsAt | since }}
+
+{{ range .Alerts }}
+**实例:** {{ .Labels.instance | default "N/A" }}
+**服务:** {{ .Labels.service | default "N/A" }}
+{{ end }}
+
+---
+✅ 问题已自动恢复，无需进一步操作。
+{{- end }}
+{{ end }}
+
+{{ define "dingtalk.message" }}
+{{ template "dingtalk.title" . }}
+
+{{ template "dingtalk.content" . }}
+{{ end }}

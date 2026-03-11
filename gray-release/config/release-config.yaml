@@ -1,0 +1,329 @@
+# 睡了么 App - 灰度发布配置文件
+# Gray Release Configuration for "睡了么" App
+
+# ============= 发布策略 =============
+release_strategy:
+  name: "渐进式灰度发布"
+  description: "5% → 20% → 50% → 100% 四阶段发布"
+  
+  phases:
+    phase1:
+      name: "初始灰度"
+      traffic_percentage: 5
+      observation_days: 2
+      observation_days_max: 3
+      
+    phase2:
+      name: "扩大灰度"
+      traffic_percentage: 20
+      observation_days: 2
+      observation_days_max: 3
+      
+    phase3:
+      name: "大规模灰度"
+      traffic_percentage: 50
+      observation_days: 2
+      observation_days_max: 3
+      
+    phase4:
+      name: "全量发布"
+      traffic_percentage: 100
+      observation_days: 0
+
+# ============= 用户分组 =============
+user_segmentation:
+  # 分组算法
+  algorithm: "consistent_hashing"
+  hash_seed: "sleepwell_user_id_v1"
+  
+  # 分组定义
+  groups:
+    internal:
+      type: "whitelist"
+      description: "内部测试用户"
+      priority: 1
+      users:
+        - "employee_*"
+        - "beta_tester_*"
+      
+    canary:
+      type: "percentage"
+      description: "灰度用户组"
+      priority: 2
+      percentage: 5  # 动态更新
+      
+    control:
+      type: "percentage"
+      description: "对照组 (稳定版)"
+      priority: 3
+      percentage: 5  # 保留 5% 作为基准
+    
+    general:
+      type: "remainder"
+      description: "普通用户"
+      priority: 4
+
+  # 定向规则
+  targeting:
+    - name: "新用户优先"
+      condition: "user.registered_at > now() - 7d"
+      action: "include_in_canary"
+      weight: 1.5
+      
+    - name: "高活跃用户"
+      condition: "user.weekly_sessions >= 10"
+      action: "include_in_canary"
+      weight: 1.2
+      
+    - name: "VIP 用户保护"
+      condition: "user.vip_level >= 3"
+      action: "exclude_from_canary"
+      weight: 0
+
+# ============= 版本控制 =============
+version_control:
+  # 版本号规范
+  version_format: "semver"  # major.minor.patch
+  phase_suffix: true        # 添加阶段后缀，如 2.1.0-phase1
+  
+  # 版本兼容性
+  compatibility:
+    min_ios_version: "14.0"
+    min_android_version: "8.0"
+    force_update_versions:
+      - "1.x.x"  # 1.x 用户强制更新
+    
+  # 版本存储
+  storage:
+    type: "s3"
+    bucket: "sleepwell-releases"
+    prefix: "releases/"
+    
+  # 版本元数据
+  metadata:
+    required_fields:
+      - version
+      - build_number
+      - release_notes
+      - checksum_sha256
+      - min_ios_version
+      - min_android_version
+
+# ============= 监控指标 =============
+monitoring:
+  # 核心指标
+  metrics:
+    crash_rate:
+      description: "应用崩溃率"
+      unit: "percentage"
+      collection_interval: 60  # 秒
+      
+    anr_rate:
+      description: "应用无响应率"
+      unit: "percentage"
+      collection_interval: 60
+      
+    launch_failure_rate:
+      description: "启动失败率"
+      unit: "percentage"
+      collection_interval: 60
+      
+    api_error_rate:
+      description: "API 错误率"
+      unit: "percentage"
+      collection_interval: 60
+      
+    user_complaint_rate:
+      description: "用户投诉率"
+      unit: "percentage"
+      collection_interval: 300
+      
+    active_users:
+      description: "活跃用户数"
+      unit: "count"
+      collection_interval: 300
+
+  # 告警阈值 (按阶段)
+  thresholds:
+    phase1:
+      crash_rate: 0.005      # 0.5%
+      anr_rate: 0.003        # 0.3%
+      launch_failure_rate: 0.005  # 0.5%
+      api_error_rate: 0.010  # 1.0%
+      complaint_rate: 0.001  # 0.1%
+      
+    phase2:
+      crash_rate: 0.008      # 0.8%
+      anr_rate: 0.005        # 0.5%
+      launch_failure_rate: 0.008  # 0.8%
+      api_error_rate: 0.020  # 2.0%
+      complaint_rate: 0.002  # 0.2%
+      
+    phase3:
+      crash_rate: 0.010      # 1.0%
+      anr_rate: 0.008        # 0.8%
+      launch_failure_rate: 0.010  # 1.0%
+      api_error_rate: 0.030  # 3.0%
+      complaint_rate: 0.005  # 0.5%
+      
+    phase4:
+      crash_rate: 0.010      # 1.0%
+      anr_rate: 0.008        # 0.8%
+      launch_failure_rate: 0.010  # 1.0%
+      api_error_rate: 0.030  # 3.0%
+      complaint_rate: 0.005  # 0.5%
+
+  # 告警配置
+  alerts:
+    enabled: true
+    cooldown_seconds: 600  # 10 分钟冷却
+    
+    channels:
+      - type: "dingtalk"
+        webhook: "${DINGTALK_RELEASE_ALERTS_WEBHOOK}"
+        mention: ["@release-manager", "@devops-oncall"]
+        
+      - type: "slack"
+        channel: "#release-alerts"
+        mention: ["@release-manager", "@oncall"]
+    
+    escalation:
+      - level: 1
+        after_minutes: 5
+        notify: ["release-manager"]
+      - level: 2
+        after_minutes: 15
+        notify: ["engineering-lead", "product-owner"]
+      - level: 3
+        after_minutes: 30
+        notify: ["cto", "vp-engineering"]
+
+# ============= 回滚机制 =============
+rollback:
+  # 自动回滚
+  auto_rollback:
+    enabled: true
+    
+    # 触发条件
+    conditions:
+      - metric: "crash_rate"
+        operator: ">"
+        threshold: 0.01  # 1%
+        window_seconds: 3600  # 1 小时窗口
+        
+      - metric: "launch_failure_rate"
+        operator: ">"
+        threshold: 0.02  # 2%
+        window_seconds: 1800  # 30 分钟窗口
+        
+      - metric: "api_error_rate"
+        operator: ">"
+        threshold: 0.10  # 10%
+        window_seconds: 900  # 15 分钟窗口
+    
+    # 回滚动作
+    actions:
+      - "stop_deployment"
+      - "rollback_to_previous"
+      - "notify_team"
+      - "create_incident"
+  
+  # 手动回滚
+  manual_rollback:
+    # 审批流程
+    approval_required: true
+    approvers:
+      - "release-manager"
+      - "engineering-lead"
+    
+    # 回滚目标
+    target:
+      default: "previous_stable"
+      options:
+        - "immediate_previous"
+        - "last_known_good"
+        - "specific_version"
+  
+  # 回滚时间目标
+  time_budget:
+    decision_seconds: 300    # 5 分钟
+    execution_seconds: 900   # 15 分钟
+    validation_seconds: 600  # 10 分钟
+    total_seconds: 1800      # 30 分钟
+
+# ============= 通知配置 =============
+notifications:
+  # 发布通知
+  release:
+    events:
+      - "phase_started"
+      - "phase_completed"
+      - "release_completed"
+      - "release_aborted"
+    
+    channels:
+      - type: "dingtalk"
+        group: "release-notifications"
+      - type: "email"
+        recipients:
+          - "release-team@sleepwell.com"
+          - "engineering@sleepwell.com"
+  
+  # 阶段推进通知
+  promotion:
+    require_approval: true
+    approvers:
+      - "release-manager"
+      - "product-owner"
+
+# ============= 集成配置 =============
+integrations:
+  # 监控系统
+  monitoring_system:
+    type: "grafana"
+    url: "https://grafana.sleepwell.internal"
+    api_key: "${GRAFANA_API_KEY}"
+    
+  # 发布管理系统
+  release_management:
+    type: "custom"
+    api_endpoint: "https://release.sleepwell.internal/api/v1"
+    api_key: "${RELEASE_API_KEY}"
+    
+  # 错误追踪
+  error_tracking:
+    type: "sentry"
+    dsn: "${SENTRY_DSN}"
+    organization: "sleepwell"
+    
+  # 用户反馈
+  user_feedback:
+    type: "custom"
+    api_endpoint: "https://feedback.sleepwell.internal/api"
+
+# ============= 检查清单 =============
+checklists:
+  pre_release:
+    - "代码审查完成"
+    - "自动化测试通过率 100%"
+    - "性能测试通过"
+    - "安全扫描无高危漏洞"
+    - "回滚脚本已验证"
+    - "监控告警已配置"
+    - "On-call 人员已安排"
+    - "发布通知已发送"
+  
+  phase_promotion:
+    - "当前阶段观察期已满"
+    - "崩溃率低于阈值"
+    - "无 P0/P1 级别 Bug"
+    - "用户反馈正常"
+    - "性能指标正常"
+    - "团队确认可以推进"
+  
+  post_release:
+    - "全量用户已更新"
+    - "监控指标稳定"
+    - "用户反馈收集"
+    - "发布总结文档"
+    - "经验教训归档"
