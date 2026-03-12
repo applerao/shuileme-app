@@ -36,9 +36,9 @@ role-config/
 
 ---
 
-## 已配置角色（10 个）
+## 已配置角色（18 个）
 
-### Engineering (工程类) - 5 个
+### Engineering (工程类) - 5/7 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
@@ -48,36 +48,58 @@ role-config/
 | `DevOps Automator` | [devops-automator.md](./engineering/devops-automator.md) | 待激活 | - |
 | `AI Engineer` | [ai-engineer.md](./engineering/ai-engineer.md) | 待激活 | - |
 
-### Testing (测试类) - 1 个
+### Testing (测试类) - 1/7 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Test Results Analyzer` | [test-results-analyzer.md](./testing/test-results-analyzer.md) | 2026-03-12 | SQLite 兼容性全面排查 |
 
-### Product (产品类) - 1 个
+### Product (产品类) - 1/3 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Product Manager` | [product-manager.md](./product/product-manager.md) | 待激活 | - |
 
-### Design (设计类) - 1 个
+### Design (设计类) - 1/7 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `UI Designer` | [ui-designer.md](./design/ui-designer.md) | 待激活 | - |
 
-### Marketing (市场类) - 2 个
+### Marketing (市场类) - 2/8 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Content Creator` | [content-creator.md](./marketing/content-creator.md) | 待激活 | - |
 | `Growth Hacker` | [growth-hacker.md](./marketing/growth-hacker.md) | 待激活 | - |
 
-### Strategy (战略类) - 1 个
+### Strategy (战略类) - 1/3 个 ✅
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Data Analyst` | [data-analyst.md](./strategy/data-analyst.md) | 待激活 | - |
+
+### Support (支持类) - 3/6 个 ✅
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Support Responder` | [support-responder.md](./support/support-responder.md) | 待激活 | - |
+| `Analytics Reporter` | [analytics-reporter.md](./support/analytics-reporter.md) | 待激活 | - |
+| `Infrastructure Maintainer` | [infrastructure-maintainer.md](./support/infrastructure-maintainer.md) | 待激活 | - |
+
+### Spatial Computing (空间计算类) - 1/6 个 ✅
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `XR Interface Architect` | [xr-interface-architect.md](./spatial-computing/xr-interface-architect.md) | 待激活 | - |
+
+### Specialized (专业类) - 3/7 个 ✅
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Agents Orchestrator` | [agents-orchestrator.md](./specialized/agents-orchestrator.md) | 待激活 | - |
+| `Data Consolidation Agent` | [data-consolidation-agent.md](./specialized/data-consolidation-agent.md) | 待激活 | - |
+| `Domain Expert` | [domain-expert.md](./specialized/domain-expert.md) | 待激活 | - |
 
 ---
 
