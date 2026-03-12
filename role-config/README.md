@@ -36,41 +36,48 @@ role-config/
 
 ---
 
-## 已配置角色
+## 已配置角色（10 个）
 
-### Engineering (工程类)
+### Engineering (工程类) - 5 个
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Backend Architect` | [backend-architect.md](./engineering/backend-architect.md) | 2026-03-12 | SQLite 兼容性架构设计 |
 | `Senior Developer` | [senior-developer.md](./engineering/senior-developer.md) | 2026-03-12 | PostgreSQL→SQLite 代码修复 |
+| `Frontend Developer` | [frontend-developer.md](./engineering/frontend-developer.md) | 待激活 | - |
+| `DevOps Automator` | [devops-automator.md](./engineering/devops-automator.md) | 待激活 | - |
+| `AI Engineer` | [ai-engineer.md](./engineering/ai-engineer.md) | 待激活 | - |
 
-### Testing (测试类)
+### Testing (测试类) - 1 个
 
 | 角色 | 配置文件 | 首次激活 | 最近任务 |
 |------|---------|---------|---------|
 | `Test Results Analyzer` | [test-results-analyzer.md](./testing/test-results-analyzer.md) | 2026-03-12 | SQLite 兼容性全面排查 |
 
----
+### Product (产品类) - 1 个
 
-## 待配置角色（核心）
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Product Manager` | [product-manager.md](./product/product-manager.md) | 待激活 | - |
 
-### Engineering
-- [ ] `Frontend Developer` - 前端开发
-- [ ] `DevOps Automator` - 运维自动化
-- [ ] `AI Engineer` - AI 工程
+### Design (设计类) - 1 个
 
-### Product
-- [ ] `Product Manager` - 产品经理
-- [ ] `Sprint Prioritizer` - 敏捷规划
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `UI Designer` | [ui-designer.md](./design/ui-designer.md) | 待激活 | - |
 
-### Design
-- [ ] `UI Designer` - 界面设计
-- [ ] `UX Researcher` - 用户研究
+### Marketing (市场类) - 2 个
 
-### Marketing
-- [ ] `Content Creator` - 内容创作
-- [ ] `Growth Hacker` - 增长黑客
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Content Creator` | [content-creator.md](./marketing/content-creator.md) | 待激活 | - |
+| `Growth Hacker` | [growth-hacker.md](./marketing/growth-hacker.md) | 待激活 | - |
+
+### Strategy (战略类) - 1 个
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Data Analyst` | [data-analyst.md](./strategy/data-analyst.md) | 待激活 | - |
 
 ---
 
