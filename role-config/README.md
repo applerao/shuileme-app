@@ -1,0 +1,151 @@
+# 🎭 角色配置中心
+
+**用途：** 每个角色的独立配置文件，记录角色偏好、经验和成长
+
+---
+
+## 目录结构
+
+```
+role-config/
+├── README.md                    # 本文件
+├── engineering/                 # 工程类角色
+│   ├── backend-architect.md     # 后端架构师
+│   └── senior-developer.md      # 高级开发者
+├── testing/                     # 测试类角色
+│   └── test-results-analyzer.md # 测试结果分析师
+├── marketing/                   # 市场类角色
+├── product/                     # 产品类角色
+└── design/                      # 设计类角色
+```
+
+---
+
+## 角色配置文件结构
+
+每个角色的 `.md` 文件包含：
+
+| 章节 | 内容 |
+|------|------|
+| **核心职责** | 角色的主要工作范围 |
+| **工作偏好** | 技术栈、工具、方法论偏好 |
+| **历史经验** | 参与过的任务和学到的经验 |
+| **协作关系** | 常合作的其他角色 |
+| **成长目标** | 短期/中期/长期目标 |
+| **变更记录** | 配置更新历史 |
+
+---
+
+## 已配置角色
+
+### Engineering (工程类)
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Backend Architect` | [backend-architect.md](./engineering/backend-architect.md) | 2026-03-12 | SQLite 兼容性架构设计 |
+| `Senior Developer` | [senior-developer.md](./engineering/senior-developer.md) | 2026-03-12 | PostgreSQL→SQLite 代码修复 |
+
+### Testing (测试类)
+
+| 角色 | 配置文件 | 首次激活 | 最近任务 |
+|------|---------|---------|---------|
+| `Test Results Analyzer` | [test-results-analyzer.md](./testing/test-results-analyzer.md) | 2026-03-12 | SQLite 兼容性全面排查 |
+
+---
+
+## 待配置角色（核心）
+
+### Engineering
+- [ ] `Frontend Developer` - 前端开发
+- [ ] `DevOps Automator` - 运维自动化
+- [ ] `AI Engineer` - AI 工程
+
+### Product
+- [ ] `Product Manager` - 产品经理
+- [ ] `Sprint Prioritizer` - 敏捷规划
+
+### Design
+- [ ] `UI Designer` - 界面设计
+- [ ] `UX Researcher` - 用户研究
+
+### Marketing
+- [ ] `Content Creator` - 内容创作
+- [ ] `Growth Hacker` - 增长黑客
+
+---
+
+## 使用方式
+
+### 激活角色
+```bash
+# 查看角色配置
+cat role-config/engineering/backend-architect.md
+
+# 激活角色（通过对话）
+"让 Backend Architect 设计数据库方案"
+```
+
+### 更新角色经验
+任务完成后，更新对应角色的"历史经验"章节：
+1. 记录任务内容
+2. 学到的经验教训
+3. 产出文档/代码
+4. 技术债务清单
+
+### 角色成长追踪
+每个角色有短期/中期/长期目标，定期回顾进展。
+
+---
+
+## 角色协作流程
+
+```
+1. 万能小秘书接收任务
+   ↓
+2. 分析需要的角色
+   ↓
+3. 依次激活角色（读取角色配置）
+   ↓
+4. 角色按配置偏好工作
+   ↓
+5. 输出专业交付物
+   ↓
+6. 更新角色经验（记录本次任务）
+   ↓
+7. 万能小秘书汇总交付
+```
+
+---
+
+## 维护规范
+
+### 何时更新角色配置
+- ✅ 完成新类型任务后
+- ✅ 学到新经验教训后
+- ✅ 技术栈偏好变化后
+- ✅ 角色目标调整后
+
+### 更新频率
+- **历史经验** - 每次任务后
+- **成长目标** - 每月审查
+- **工作偏好** - 按需更新
+
+### 版本控制
+角色配置文件纳入 Git 版本控制，变更有提交记录。
+
+---
+
+## 关联文件
+
+| 文件 | 用途 |
+|------|------|
+| `AGENTS.md` | 工作区通用规约（含角色策略） |
+| `USER.md` | 用户信息和偏好 |
+| `ROLE-CONSTRAINTS.md` | 角色扮演规约 |
+| `role-library/` | 77 个角色的原始定义 |
+
+---
+
+**创建日期：** 2026-03-12  
+**维护者：** 万能小秘书  
+**下次审查：** 2026-03-19
